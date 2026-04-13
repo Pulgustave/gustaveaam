@@ -71,8 +71,8 @@ const ProjectDetails = () => {
                     <ReactMarkdown
                         rehypePlugins={[rehypeRaw]}
                         components={{
-                            p: ({node, ...props}) => <p className="project-details-desc" style={{ marginBottom: '1.5rem' }} {...props} />,
-                            img: ({node, ...props}) => (
+                            p: ({ ...props}) => <p className="project-details-desc" style={{ marginBottom: '1.5rem' }} {...props} />,
+                            img: ({ ...props}) => (
                                 <div style={{
                                     width: '100%',
                                     maxWidth: '700px', 

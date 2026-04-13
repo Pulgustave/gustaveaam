@@ -1,6 +1,32 @@
 import React, { useEffect, useRef } from 'react';
 import p5 from 'p5';
 
+class Particle {
+    constructor(p) {
+        this.p = p;
+        this.pos = p.createVector(p.random(p.width), p.random(p.height));
+        this.vel = p.createVector(p.random(-0.5, 0.5), p.random(-0.5, 0.5)); // Slow drift
+        this.size = p.random(1, 3);
+    }
+
+    update() {
+        this.pos.add(this.vel);
+    }
+
+    draw() {
+        this.p.noStroke();
+        this.p.fill(255, 200);
+        this.p.ellipse(this.pos.x, this.pos.y, this.size);
+    }
+
+    checkEdges() {
+        if (this.pos.x < 0) this.pos.x = this.p.width;
+        if (this.pos.x > this.p.width) this.pos.x = 0;
+        if (this.pos.y < 0) this.pos.y = this.p.height;
+        if (this.pos.y > this.p.height) this.pos.y = 0;
+    }
+}
+
 const Background = () => {
     const containerRef = useRef(null);
 
@@ -55,32 +81,6 @@ const Background = () => {
             p.windowResized = () => {
                 p.resizeCanvas(p.windowWidth, p.windowHeight);
             };
-
-            class Particle {
-                constructor(p) {
-                    this.p = p;
-                    this.pos = p.createVector(p.random(p.width), p.random(p.height));
-                    this.vel = p.createVector(p.random(-0.5, 0.5), p.random(-0.5, 0.5)); // Slow drift
-                    this.size = p.random(1, 3);
-                }
-
-                update() {
-                    this.pos.add(this.vel);
-                }
-
-                draw() {
-                    this.p.noStroke();
-                    this.p.fill(255, 200);
-                    this.p.ellipse(this.pos.x, this.pos.y, this.size);
-                }
-
-                checkEdges() {
-                    if (this.pos.x < 0) this.pos.x = this.p.width;
-                    if (this.pos.x > this.p.width) this.pos.x = 0;
-                    if (this.pos.y < 0) this.pos.y = this.p.height;
-                    if (this.pos.y > this.p.height) this.pos.y = 0;
-                }
-            }
         };
 
         const p5Instance = new p5(sketch);

@@ -1,5 +1,5 @@
 import projectPlaceholder from '../assets/project_placeholder.png';
-import rwindImage from '../assets/25007_RWIND.jpg';
+import pixelArt from '../assets/pixelArt.png';
 import LV_THEVERYMANY_Milan1 from '../assets/LV_THEVERYMANY_Milan1.webp';
 
 export const projects = [
@@ -7,7 +7,7 @@ export const projects = [
         id: 11,
         title: 'PIXELIZER - IN-BROWSER PIXEL ART GENERATOR',
         categories: ['Creative Coding', 'Web Tool'],
-        image: projectPlaceholder,
+        image: pixelArt,
         description: `# Pixel Art Generator
 *JavaScript, HTML5 Canvas*
 
