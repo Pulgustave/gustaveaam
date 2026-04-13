@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixelizer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: system-ui, sans-serif;
+    background: #1a1a1a;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+  }
+
+  h1 {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 1.5rem;
+  }
+
+  /* The label IS the dropzone — clicking it natively opens the file dialog */
+  #dropzone {
+    display: block;
+    border: 1px dashed #444;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    max-width: 580px;
+    transition: border-color 0.15s, background 0.15s;
+    user-select: none;
+  }
+  #dropzone:hover, #dropzone.drag {
+    border-color: #888;
+    background: #222;
+  }
+  #dropzone svg { display: block; margin: 0 auto 14px; }
+  #dropzone .title { font-size: 1rem; color: #ccc; }
+  #dropzone .sub   { font-size: 0.8rem; color: #555; margin-top: 6px; }
+
+  /* Hide the actual input — label handles clicks */
+  #fileInput { display: none; }
+
+  #status {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 10px;
+    min-height: 1.2em;
+  }
+
+  /* ── Workspace ── */
+  #workspace { display: none; width: 100%; max-width: 860px; }
+
+  .canvases {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+  .canvas-wrap > span {
+    display: block;
+    font-size: 0.72rem;
+    color: #555;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  canvas {
+    width: 100%;
+    display: block;
+    border-radius: 8px;
+    border: 1px solid #2a2a2a;
+    background: #111;
+  }
+  #outCanvas { image-rendering: pixelated; }
+
+  .controls {
+    background: #222;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .row { display: flex; align-items: center; gap: 12px; }
+  .row label { font-size: 0.8rem; color: #777; min-width: 100px; }
+  input[type=range] { flex: 1; accent-color: #5a85bf; cursor: pointer; }
+  .val { font-size: 0.8rem; min-width: 28px; text-align: right; color: #bbb; }
+  select {
+    flex: 1;
+    background: #2a2a2a;
+    color: #ccc;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  button {
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border: 1px solid #3a3a3a;
+    background: #2a2a2a;
+    color: #ccc;
+    transition: background 0.1s;
+  }
+  button:hover { background: #333; }
+  button.primary { background: #2a4a7a; border-color: #3a5a8a; color: #d0d8f0; }
+  button.primary:hover { background: #3a5a8a; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<h1>Pixel Art Generator</h1>
+
+<!-- Using label+input: most reliable cross-browser way to open a file dialog -->
+<label id="dropzone" for="fileInput">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <path d="M3 15l5-5 4 4 3-3 6 6"/>
+    <circle cx="8.5" cy="8.5" r="1.5"/>
+  </svg>
+  <span class="title">Drop a photo here</span>
+  <span class="sub">or click to browse — PNG, JPG, WEBP</span>
+</label>
+<input type="file" id="fileInput" accept="image/*">
+<div id="status"></div>
+
+<div id="workspace">
+  <div class="canvases">
+    <div class="canvas-wrap">
+      <span>Original</span>
+      <canvas id="origCanvas"></canvas>
+    </div>
+    <div class="canvas-wrap">
+      <span>Pixel art</span>
+      <canvas id="outCanvas"></canvas>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="row">
+      <label for="pixelSize">Pixel size</label>
+      <input type="range" id="pixelSize" min="2" max="32" value="8" step="1">
+      <span class="val" id="psv">8</span>
+    </div>
+    <div class="row" id="lvrow">
+      <label for="colorLevels">Color levels</label>
+      <input type="range" id="colorLevels" min="2" max="8" value="4" step="1">
+      <span class="val" id="clv">4</span>
+    </div>
+    <div class="row">
+      <label for="palette">Palette</label>
+      <select id="palette">
+        <option value="auto">Auto (posterize)</option>
+        <option value="gbc" selected>GBC warm</option>
+        <option value="dmg">Gameboy DMG</option>
+        <option value="pico8">Pico-8</option>
+        <option value="cga">CGA arcade</option>
+        <option value="endesga">Endesga 32</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button class="primary" id="dlBtn">Download PNG</button>
+    <button id="resetBtn">Load new photo</button>
+  </div>
+</div>
+
+<script>
+// ── Palettes ──────────────────────────────────────────────────────────────────
+const PALETTES = {
+  dmg: [
+    [15,56,15],[48,98,48],[139,172,15],[155,188,15]
+  ],
+  gbc: [
+    [0,0,0],[29,29,29],[85,85,85],[170,170,170],[255,255,255],
+    [0,0,128],[0,0,255],[0,128,255],[128,200,255],
+    [0,100,0],[0,180,0],[100,220,50],[200,255,100],
+    [128,0,0],[200,50,0],[255,100,0],[255,180,50],
+    [100,50,0],[180,120,60],[230,190,130],[255,240,200],
+    [100,0,100],[180,0,180],[220,80,180],[255,170,220]
+  ],
+  cga: [
+    [0,0,0],[0,0,170],[0,170,0],[0,170,170],
+    [170,0,0],[170,0,170],[170,85,0],[170,170,170],
+    [85,85,85],[85,85,255],[85,255,85],[85,255,255],
+    [255,85,85],[255,85,255],[255,255,85],[255,255,255]
+  ],
+  pico8: [
+    [0,0,0],[29,43,83],[126,37,83],[0,135,81],
+    [171,82,54],[95,87,79],[194,195,199],[255,241,232],
+    [255,0,77],[255,163,0],[255,236,39],[0,228,54],
+    [41,173,255],[131,118,156],[255,119,168],[255,204,170]
+  ],
+  endesga: [
+    [190,74,47],[215,118,67],[234,212,170],[228,166,114],
+    [184,111,80],[115,62,57],[62,39,49],[162,38,51],
+    [228,59,68],[247,118,34],[254,174,52],[254,231,97],
+    [99,199,77],[62,137,72],[38,92,66],[25,60,62],
+    [18,78,137],[0,153,219],[44,232,245],[255,255,255],
+    [192,203,220],[139,155,180],[90,105,136],[58,68,102],
+    [38,43,68],[24,20,37],[255,0,68],[104,56,108],
+    [181,80,136],[246,117,122],[232,183,150],[194,133,105]
+  ]
+};
+
+// ── Refs ──────────────────────────────────────────────────────────────────────
+const fileInput  = document.getElementById('fileInput');
+const dropzone   = document.getElementById('dropzone');
+const statusEl   = document.getElementById('status');
+const workspace  = document.getElementById('workspace');
+const origCanvas = document.getElementById('origCanvas');
+const outCanvas  = document.getElementById('outCanvas');
+let sourceImg = null;
+
+function setStatus(msg) { statusEl.textContent = msg; }
+
+// ── Drag and drop onto the label ──────────────────────────────────────────────
+dropzone.addEventListener('dragover', e => {
+  e.preventDefault();
+  dropzone.classList.add('drag');
+});
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) loadImage(file);
+});
+
+// ── File selected via dialog ──────────────────────────────────────────────────
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length > 0) loadImage(fileInput.files[0]);
+});
+
+// ── Load image via FileReader (no CORS/blob URL issues) ───────────────────────
+function loadImage(file) {
+  setStatus('Reading file...');
+
+  const reader = new FileReader();
+  reader.onerror = () => setStatus('Error: could not read file.');
+  reader.onload = (e) => {
+    setStatus('Decoding image...');
+    const img = new Image();
+    img.onerror = () => setStatus('Error: could not decode image.');
+    img.onload = () => {
+      setStatus('');
+      sourceImg = img;
+
+      // Cap at 600px to keep canvas fast
+      const MAX = 600;
+      const scale = Math.min(MAX / img.width, MAX / img.height, 1);
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+
+      origCanvas.width  = w;  origCanvas.height  = h;
+      outCanvas.width   = w;  outCanvas.height   = h;
+
+      const ctx = origCanvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+
+      dropzone.style.display  = 'none';
+      workspace.style.display = 'block';
+
+      render();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── Pixelate + quantize ───────────────────────────────────────────────────────
+function render() {
+  if (!sourceImg) return;
+
+  const blockSize   = parseInt(document.getElementById('pixelSize').value);
+  const colorLevels = parseInt(document.getElementById('colorLevels').value);
+  const paletteKey  = document.getElementById('palette').value;
+  const W = outCanvas.width;
+  const H = outCanvas.height;
+
+  // Step 1 — downscale with smoothing (averages each block into one pixel)
+  const tW = Math.max(1, Math.ceil(W / blockSize));
+  const tH = Math.max(1, Math.ceil(H / blockSize));
+  const tmp  = document.createElement('canvas');
+  tmp.width  = tW;
+  tmp.height = tH;
+  const tCtx = tmp.getContext('2d');
+  tCtx.imageSmoothingEnabled  = true;
+  tCtx.imageSmoothingQuality  = 'high';
+  tCtx.drawImage(sourceImg, 0, 0, tW, tH);
+
+  // Step 2 — color quantization on the small grid
+  const id = tCtx.getImageData(0, 0, tW, tH);
+  const d  = id.data;
+
+  if (paletteKey === 'auto') {
+    // Posterize: snap each channel to N evenly-spaced values
+    const step = Math.max(1, Math.round(255 / (colorLevels - 1)));
+    for (let i = 0; i < d.length; i += 4) {
+      d[i]   = Math.min(255, Math.round(d[i]   / step) * step);
+      d[i+1] = Math.min(255, Math.round(d[i+1] / step) * step);
+      d[i+2] = Math.min(255, Math.round(d[i+2] / step) * step);
+    }
+  } else {
+    // Palette match: nearest color by squared RGB Euclidean distance
+    const pal = PALETTES[paletteKey];
+    for (let i = 0; i < d.length; i += 4) {
+      const [r, g, b] = nearestColor(d[i], d[i+1], d[i+2], pal);
+      d[i] = r; d[i+1] = g; d[i+2] = b;
+    }
+  }
+  tCtx.putImageData(id, 0, 0);
+
+  // Step 3 — upscale with nearest-neighbor (hard pixel edges, no blurring)
+  const ctx = outCanvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(tmp, 0, 0, W, H);
+}
+
+function nearestColor(r, g, b, palette) {
+  let best = palette[0], minDist = Infinity;
+  for (const c of palette) {
+    const d = (r - c[0]) ** 2 + (g - c[1]) ** 2 + (b - c[2]) ** 2;
+    if (d < minDist) { minDist = d; best = c; }
+  }
+  return best;
+}
+
+// ── Controls ──────────────────────────────────────────────────────────────────
+document.getElementById('pixelSize').addEventListener('input', function () {
+  document.getElementById('psv').textContent = this.value;
+  render();
+});
+document.getElementById('colorLevels').addEventListener('input', function () {
+  document.getElementById('clv').textContent = this.value;
+  render();
+});
+document.getElementById('palette').addEventListener('change', function () {
+  document.getElementById('lvrow').classList.toggle('hidden', this.value !== 'auto');
+  render();
+});
+
+// ── Download ──────────────────────────────────────────────────────────────────
+document.getElementById('dlBtn').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.download = 'pixel-art.png';
+  a.href = outCanvas.toDataURL('image/png');
+  a.click();
+});
+
+// ── Reset ─────────────────────────────────────────────────────────────────────
+document.getElementById('resetBtn').addEventListener('click', () => {
+  sourceImg        = null;
+  fileInput.value  = '';
+  workspace.style.display = 'none';
+  dropzone.style.display  = 'block';
+  setStatus('');
+});
+
+// Init palette visibility
+document.getElementById('palette').dispatchEvent(new Event('change'));
+</script>
+</body>
+</html>
