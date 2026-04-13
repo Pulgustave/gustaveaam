@@ -4,6 +4,22 @@ import LV_THEVERYMANY_Milan1 from '../assets/LV_THEVERYMANY_Milan1.webp';
 
 export const projects = [
     {
+        id: 11,
+        title: 'PIXELIZER - IN-BROWSER PIXEL ART GENERATOR',
+        categories: ['Creative Coding', 'Web Tool'],
+        image: projectPlaceholder,
+        description: `# Pixel Art Generator
+*JavaScript, HTML5 Canvas*
+
+A browser-based image pixelizer that converts photographs into retro pixel art using a two-pass rendering pipeline. The first pass downscales the source image to a low-resolution grid using bilinear averaging, condensing each pixel block into a single representative color. The second pass upscales the result with nearest-neighbor interpolation to produce hard pixel edges without smoothing artifacts.
+
+Color quantization is handled in two modes: posterization, which snaps each RGB channel to a set of evenly-spaced discrete levels, and palette matching, which maps every pixel to the closest color in a fixed palette using squared Euclidean distance in RGB space. The tool ships with five historically accurate palettes including the original Game Boy DMG four-shade green, Game Boy Color, Pico-8, CGA, and Endesga 32.
+
+Built as a single self-contained HTML file with no external dependencies.
+
+<iframe src="${import.meta.env.BASE_URL}pixelizer.html" style="width: 100%; height: 750px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin: 2rem 0; background: var(--bg-color);"></iframe>`
+    },
+    {
         id: 8,
         title: 'CRAFT ALADDIN - REVIT ADD-INS - MULTIPLE AUTOMATIONS',
         categories: ['Programming', 'Automations'],
