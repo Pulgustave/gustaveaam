@@ -2184,7 +2184,7 @@ Color quantization is handled in two modes: posterization, which snaps each RGB 
 
 Built as a single self-contained HTML file with no external dependencies.
 
-<iframe src="/portfolio-web-app/pixelizer.html" style="width: 100%; height: 750px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin: 2rem 0; background: var(--bg-color);"></iframe>`},{id:8,title:"CRAFT ALADDIN - REVIT ADD-INS - MULTIPLE AUTOMATIONS",categories:["Programming","Automations"],image:BU,description:`# Building CRAFT Aladdin: Automating the Invisible Work of Structural Engineering
+<iframe src="/portfolio-web-app/pixelizer.html" style="width: 100%; height: 750px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin: 2rem 0; background: var(--bg-color);"></iframe>`},{id:8,title:"CRAFT - REVIT ADD-IN - MULTIPLE AUTOMATIONS",categories:["Programming","Automations"],image:BU,description:`# Building CRAFT Aladdin: Automating the Invisible Work of Structural Engineering
 
 Structural engineering has a public-facing story: you calculate loads, size members, make the decisions that keep a building standing. Then there's the other work — forty gridlines renamed by hand, two hundred columns tagged one by one, twelve framing plan sheets aligned by eye. Systematic, repetitive, necessary, and consuming time that should have gone to thinking about the structure.
 
@@ -2232,8 +2232,10 @@ And something harder to name: permission. When repeatable work is automated, the
 
 ---
 
-*CRAFT Aladdin is under active development. Current commands cover project setup, grid management, arch model coordination, documentation, and model cleanup.*`},{id:1,title:"THEVERYMANY PAVILIONS - THEVERYMANY / CRAFT - MILAN / LONDON / SINGAPORE",categories:["Computational Design","Structural Design","Confidential"],description:`Projects include Pavilion Nomad (Milan 2023), TheVeryMany London, and TheVeryMany Singapour. 
-These projects and their specific structural engineering details are confidential.`},{id:9,title:"ODYSSEY - SANFORD BIGGERS STUDIO - PORTLAND, OR",categories:["Computational Design","Structural Engineering"],image:"https://craftengin.com/wp-content/uploads/2025/03/Odyssey-007.jpg",description:`Odyssey is a pair of fully suspended sculptures by Sanford Biggers Studio, located in the new mass-timber terminal at Portland International Airport. 
+*CRAFT Aladdin is under active development. Current commands cover project setup, grid management, arch model coordination, documentation, and model cleanup.*`},{id:1,title:"THEVERYMANY PAVILIONS - THEVERYMANY / CRAFT - MILAN / LONDON / SINGAPORE",categories:["Computational Design","Structural Design","Confidential"],description:`Projects include Pavilion Nomad (Milan 2023), TheVeryMany London, and TheVeryMany Singapore. 
+These projects and their specific structural engineering details are confidential.
+
+<iframe src="\${import.meta.env.BASE_URL}theverymany_milan_glyph_fix.html" style="width: 100%; height: 500px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin: 2rem 0; background: transparent;"></iframe>`},{id:9,title:"ODYSSEY - SANFORD BIGGERS STUDIO - PORTLAND, OR",categories:["Computational Design","Structural Engineering"],image:"https://craftengin.com/wp-content/uploads/2025/03/Odyssey-007.jpg",description:`Odyssey is a pair of fully suspended sculptures by Sanford Biggers Studio, located in the new mass-timber terminal at Portland International Airport. 
 The artwork consists of custom DiBond aluminum graphic panels supported by lightweight aluminum tube frames and hung from near-invisible stainless steel aircraft cables to create a seamless illusion of floating above deplaning passengers. 
 
 ![Odyssey Floating](https://craftengin.com/wp-content/uploads/2025/03/Odyssey-007.jpg)
