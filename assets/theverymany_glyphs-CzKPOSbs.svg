@@ -1,0 +1,71 @@
+<svg viewBox="0 0 280 176" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- LV Milan -->
+  <g transform="translate(0, 0)">
+    <g opacity="0.13" stroke="#ffffff" stroke-width="0.5">
+      <ellipse cx="30" cy="42" rx="18" ry="24"/>
+      <ellipse cx="70" cy="36" rx="22" ry="28"/>
+      <ellipse cx="110" cy="42" rx="18" ry="24"/>
+      <!-- left bulb legs: outer-left, center, outer-right -->
+      <line x1="15" y1="65" x2="10" y2="78"/>
+      <line x1="30" y1="66" x2="30" y2="78"/>
+      <line x1="45" y1="65" x2="50" y2="78"/>
+      <!-- center bulb legs: outer-left, center, outer-right -->
+      <line x1="53" y1="63" x2="48" y2="78"/>
+      <line x1="70" y1="64" x2="70" y2="78"/>
+      <line x1="87" y1="63" x2="92" y2="78"/>
+      <!-- right bulb legs: outer-left, center, outer-right (mirror of left) -->
+      <line x1="95" y1="65" x2="90" y2="78"/>
+      <line x1="110" y1="66" x2="110" y2="78"/>
+      <line x1="125" y1="65" x2="130" y2="78"/>
+    </g>
+    <!-- foreground ellipses -->
+    <ellipse cx="30" cy="40" rx="17" ry="23" stroke="#ffffff" stroke-width="1" opacity="0.5" fill="none"/>
+    <ellipse cx="70" cy="34" rx="21" ry="27" stroke="#ffffff" stroke-width="1.2" opacity="0.65" fill="none"/>
+    <ellipse cx="110" cy="40" rx="17" ry="23" stroke="#ffffff" stroke-width="1" opacity="0.5" fill="none"/>
+    <!-- foreground legs: 2 splaying legs per bulb -->
+    <line x1="18" y1="63" x2="13" y2="78" stroke="#ffffff" stroke-width="0.8" opacity="0.45"/>
+    <line x1="42" y1="63" x2="47" y2="78" stroke="#ffffff" stroke-width="0.8" opacity="0.45"/>
+    <line x1="55" y1="61" x2="50" y2="78" stroke="#ffffff" stroke-width="0.8" opacity="0.45"/>
+    <line x1="85" y1="61" x2="90" y2="78" stroke="#ffffff" stroke-width="0.8" opacity="0.45"/>
+    <line x1="98" y1="63" x2="93" y2="78" stroke="#ffffff" stroke-width="0.8" opacity="0.45"/>
+    <line x1="122" y1="63" x2="127" y2="78" stroke="#ffffff" stroke-width="0.8" opacity="0.45"/>
+    <line x1="10" y1="78" x2="130" y2="78" stroke="#ffffff" stroke-width="0.5" opacity="0.25"/>
+  </g>
+  <!-- Porsche Singapore -->
+  <g transform="translate(140, 0)">
+    <g opacity="0.13" stroke="#ffffff" stroke-width="0.5">
+      <path d="M8,72 Q8,28 40,16 Q70,6 100,16 Q132,28 132,72"/>
+      <path d="M18,72 Q18,36 44,26 Q70,18 96,26 Q122,36 122,72"/>
+      <path d="M28,72 Q28,42 50,34 Q70,26 90,34 Q112,42 112,72"/>
+      <line x1="8" y1="72" x2="132" y2="72"/>
+      <line x1="12" y1="55" x2="128" y2="55"/>
+      <line x1="20" y1="38" x2="120" y2="38"/>
+      <line x1="36" y1="24" x2="104" y2="24"/>
+    </g>
+    <path d="M8,72 Q8,28 40,16 Q70,6 100,16 Q132,28 132,72" stroke="#ffffff" stroke-width="1.2" opacity="0.65" fill="none"/>
+    <line x1="8" y1="72" x2="132" y2="72" stroke="#ffffff" stroke-width="0.8" opacity="0.4"/>
+    <rect x="22" y="52" width="38" height="20" stroke="#aaaaaa" stroke-width="0.8" opacity="0.45" fill="none"/>
+    <rect x="80" y="52" width="38" height="20" stroke="#aaaaaa" stroke-width="0.8" opacity="0.45" fill="none"/>
+    <line x1="8" y1="72" x2="8" y2="78" stroke="#ffffff" stroke-width="0.8" opacity="0.4"/>
+    <line x1="132" y1="72" x2="132" y2="78" stroke="#ffffff" stroke-width="0.8" opacity="0.4"/>
+  </g>
+  <!-- LV Heathrow -->
+  <g transform="translate(70, 88)">
+    <g opacity="0.13" stroke="#ffffff" stroke-width="0.5">
+      <path d="M10,78 Q35,10 70,6 Q105,10 130,78"/>
+      <path d="M20,78 Q40,22 70,18 Q100,22 120,78"/>
+      <path d="M30,78 Q48,34 70,30 Q92,34 110,78"/>
+      <path d="M40,78 Q55,46 70,42 Q85,46 100,78"/>
+      <line x1="10" y1="78" x2="130" y2="78"/>
+      <line x1="10" y1="62" x2="130" y2="62"/>
+      <line x1="14" y1="46" x2="126" y2="46"/>
+      <line x1="22" y1="30" x2="118" y2="30"/>
+      <line x1="38" y1="16" x2="102" y2="16"/>
+    </g>
+    <path d="M10,78 Q35,8 70,5 Q105,8 130,78" stroke="#ffffff" stroke-width="1.2" opacity="0.65" fill="none"/>
+    <line x1="10" y1="78" x2="130" y2="78" stroke="#ffffff" stroke-width="0.8" opacity="0.4"/>
+    <circle cx="70" cy="5" r="2.2" fill="#ffffff" opacity="0.45"/>
+    <circle cx="10" cy="78" r="1.5" fill="#aaaaaa" opacity="0.35"/>
+    <circle cx="130" cy="78" r="1.5" fill="#aaaaaa" opacity="0.35"/>
+  </g>
+</svg>
