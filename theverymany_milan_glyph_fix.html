@@ -1,6 +1,16 @@
 
 <style>
+:root {
+  --color-background-primary: rgba(13, 13, 15, 0.4);
+  --color-background-secondary: rgba(255, 255, 255, 0.05);
+  --color-border-tertiary: rgba(255, 255, 255, 0.1);
+  --border-radius-lg: 12px;
+  --color-text-primary: #f0f0f0;
+  --color-text-secondary: #a0a0a0;
+  --color-text-tertiary: #707070;
+}
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Cormorant+Garamond:wght@300;400;500&display=swap');
+body { font-family: 'DM Mono', monospace; color: var(--color-text-primary); margin: 0; padding: 1rem; }
 .pv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: var(--color-border-tertiary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; margin: 1.5rem 0; }
 .pv-card { background: var(--color-background-primary); padding: 1.5rem; display: flex; flex-direction: column; gap: 0.85rem; transition: background 0.2s; cursor: pointer; text-decoration: none; }
 .pv-card:hover { background: var(--color-background-secondary); }
