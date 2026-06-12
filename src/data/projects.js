@@ -1,29 +1,168 @@
-import projectPlaceholder from '../assets/project_placeholder.png';
 import pixelArt from '../assets/pixelArt.png';
 import LV_THEVERYMANY_Milan1 from '../assets/LV_THEVERYMANY_Milan1.webp';
+import revitAddIn from '../assets/RevitAddIn.png';
+import theverymanyGlyphs from '../assets/theverymany_glyphs.svg';
+import rsaRobotModel from '../assets/rsa_robot_model.png';
+import rsaLoadPanels from '../assets/rsa_load_panels.png';
+import rsaLoadVerification from '../assets/rsa_load_verification.png';
+import thisSiteHome from '../assets/this_site_home.png';
+import thisSiteThumb from '../assets/this_site_thumb.png';
+import thisSiteGlitch from '../assets/this_site_glitch.gif';
 
 export const projects = [
     {
-        id: 11,
-        title: 'PIXELIZER - IN-BROWSER PIXEL ART GENERATOR',
-        categories: ['Creative Coding', 'Web Tool'],
-        image: pixelArt,
-        description: `# Pixel Art Generator
-*JavaScript, HTML5 Canvas*
+        id: 13,
+        title: 'THIS SITE - A PORTFOLIO BUILT WITH CLAUDE CODE',
+        categories: ['Web Tool', 'Programming', 'Creative Coding'],
+        image: thisSiteThumb,
+        description: `# Building This Site: A Portfolio That Doesn't Look Like a Template
 
-A browser-based image pixelizer that converts photographs into retro pixel art using a two-pass rendering pipeline. The first pass downscales the source image to a low-resolution grid using bilinear averaging, condensing each pixel block into a single representative color. The second pass upscales the result with nearest-neighbor interpolation to produce hard pixel edges without smoothing artifacts.
+*React, Vite, p5.js, Claude Code*
 
-Color quantization is handled in two modes: posterization, which snaps each RGB channel to a set of evenly-spaced discrete levels, and palette matching, which maps every pixel to the closest color in a fixed palette using squared Euclidean distance in RGB space. The tool ships with five historically accurate palettes including the original Game Boy DMG four-shade green, Game Boy Color, Pico-8, CGA, and Endesga 32.
+This portfolio is itself a project — built, redesigned, and iterated on almost entirely through conversation with **Claude Code**, running inside the actual project repo: reading the codebase, rewriting components, restyling, and pushing to GitHub Pages.
 
-Built as a single self-contained HTML file with no external dependencies.
+![This site's homepage](${thisSiteHome})
 
-<iframe src="${import.meta.env.BASE_URL}pixelizer.html" style="width: 100%; height: 750px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin: 2rem 0; background: var(--bg-color);"></iframe>`
+---
+
+## Starting Point
+
+A React 19 + Vite single-page app, routed with \`react-router-dom\`, styled with CSS Modules and a small set of global design tokens, deployed via \`gh-pages\`. Functional, but visually generic — the kind of layout that could belong to anyone.
+
+---
+
+## The Redesign, in Two Passes
+
+The first pass leaned into a bold color-block, neo-brutalist-lite look — punchy, playful, easy to build. It read well on its own, but next to other AI-assisted portfolios it felt like a template with the names swapped: competent, but not *me*.
+
+The second pass started from a different question: what actually feels personal? Simulations and simulacra. Code as a material. Mystery, science, machines. The answer became the **Glitch / Simulacra Terminal** look this site has now — near-black, CRT scanlines, JetBrains Mono everywhere, RGB-split glitch text on hover, terminal-green and magenta accents, bracket-styled buttons and tags (\`[ like this ]\`).
+
+---
+
+## The Background Is the Point
+
+The centerpiece is a recolored **Conway's Game of Life**, running live in p5.js behind every page — green cells with the occasional magenta "glitch" cell, full automaton rules, click-and-drag to seed new patterns. Not decoration so much as the thesis of the site: small, simple, deterministic rules quietly producing something that looks alive. *"The machine thinking,"* running underneath everything else.
+
+![The Game of Life background animating behind the homepage](${thisSiteGlitch})
+
+---
+
+## Working With an AI Pair
+
+The interesting part wasn't the code — Claude Code can write CSS modules and React components quickly. The interesting part was the back-and-forth: showing a first pass, hearing "this looks like Codecademy," and figuring out together what would actually feel different. The personalization came from describing taste in words — *simulations, robots, mystery, "you know what actually feels like me? it doesn't exist"* — and watching that get translated into a palette, a font, and a set of UI motifs.
+
+This project entry, and the one about the RSA \`.str\` integration above it, were both added the same way: pointing Claude Code at a Notion doc and a folder of assets and letting it draft the case study, then editing from there.
+
+---
+
+## Stack
+
+- **React 19 + Vite 7** — SPA, routed with \`react-router-dom\` v7
+- **p5.js** — the Game of Life background simulation
+- **CSS Modules + design tokens** — per-component styling on top of a shared palette
+- **react-markdown + rehype-raw** — project case studies written as markdown with embedded images and iframes
+- **gh-pages** — one-command deploy to GitHub Pages`
+    },
+    {
+        id: 12,
+        title: 'RSA - NATIVE FORMAT INTEGRATION',
+        categories: ['Computational Design', 'Structural Engineering', 'Automations'],
+        image: rsaRobotModel,
+        description: `# RSA — Native Format Integration: Writing Directly to Robot's File Format
+
+*Grasshopper, Python, Autodesk Robot Structural Analysis*
+
+A curved concrete shell — around 7,800 triangular finite elements, three thickness zones, asymmetric soil loading — needed to move from Grasshopper into Robot Structural Analysis fully loaded and analysis-ready, on a tight deadline, and re-importable every time the geometry changed.
+
+![Concrete shell geometry, top and bottom views](${rsaRobotModel})
+
+---
+
+## The Problem With "The Right Way"
+
+The obvious paths all led somewhere worse:
+
+- **BHoM** pushes elements to Robot one at a time over COM. For 7,800 elements that's 20+ minutes per iteration — not viable for a model that needed to change daily.
+- **Excel VBA** can drive Robot through \`RobotOM.dll\`, but hit unresolvable method signature errors on \`FEServer.Create\`.
+- **GHPython + win32com** got close — node creation and thickness labels worked — but Python can't construct Robot's proprietary COM array types, so finite element creation stalled entirely.
+
+Three approaches, three dead ends, all trying to talk to Robot through its API.
+
+---
+
+## The Way In Nobody Documents
+
+Robot opens its own native \`.str\` format directly via File → Open. It's plain text. No API, no COM, no middleware — just a file format Robot happens to read.
+
+\`Grasshopper mesh → GHPython exporter → shell_import.str → Robot\`
+
+7,800 elements, 3 load cases, correct geometry and thicknesses, imported in **seconds** instead of 20+ minutes.
+
+![Discretized mesh, divided into 3 zones for load application and thickness definition](${rsaLoadPanels})
+
+---
+
+## Loads Without Panels
+
+Robot wants **panel objects** to apply surface loads correctly on shells — without them, a \`PZ=\` load on a raw element is read as a linear load (kip/ft) instead of a surface load (kip/ft²). One panel per triangle hangs Robot on import; one panel per zone loses the per-face variation the asymmetric soil load needed.
+
+The fix: skip panels entirely. Convert every surface load to **equivalent nodal forces** before writing the file —
+
+\`total_force = load × face_area\`, then \`nodal_force = total_force / 3\`
+
+— and let shared boundary nodes accumulate contributions from adjacent faces automatically. Robot's solver picks up nodal forces correctly with or without panels; the only cost is that the viewport shows point loads instead of a pressure diagram. Verified against hand calculations: self-weight + SDL (1,356 kips) and live load (~330 kips) both matched Robot's results exactly.
+
+![Mesh imported into Robot, with SDL (asymmetric soil load) and LL (constant) applied](${rsaLoadVerification})
+
+---
+
+## The Format Itself
+
+A working \`.str\` file is structured roughly as:
+
+\`\`\`
+ROBOT97
+SHEll
+NUMbering DIScontiguous
+NODes {n}  ELEments {n}
+UNIts
+LENgth=ft  Force=kip
+NODes
+  {id}  {x}  {y}  {z}
+ELEments
+TRIangular 3
+  {id}  {n1}  {n2}  {n3}
+PROperties
+"{material_name}"
+  {e1} {e2} ...  TH={thickness_ft}
+LOAds
+CASe # 1 SW
+SELf-weight
+  {e1} {e2} ...  PZ MINus
+CASe # 2 SDL
+NODes
+  {node_id}  FZ={force_kips}
+END
+\`\`\`
+
+A few rules cost real debugging time: the file **must be UTF-16 LE** — ASCII fails silently, with no error. \`ROBOT97\` has to be the first line and \`END\` the last. \`NUMbering DIScontiguous\` allows non-sequential IDs. Material names have to match Robot's database exactly (\`CONCR\`, \`A36\`, \`A992\`...). And every import has to start from a blank Robot project — re-importing into an existing model produces duplicate ID errors.
+
+Adjacent zone meshes also needed coincident-node deduplication — snapping points to a rounded coordinate key (0.1mm tolerance) so zone boundaries connect structurally instead of leaving the mesh split into disconnected islands.
+
+---
+
+## Key Lessons
+
+- Robot's COM API is effectively closed to Python — its proprietary array types are VBA-only.
+- \`dir()\` is the real documentation. Method names rarely match what the SDK implies.
+- The "unsupported" route — writing the native file format directly — turned out faster, simpler, and more reliable than anything built on the official API.
+- The model was analysis-ready the same day the geometry was finalized. With COM, that wasn't on the table.`
     },
     {
         id: 8,
-        title: 'CRAFT ALADDIN - REVIT ADD-INS - MULTIPLE AUTOMATIONS',
+        title: 'CRAFT - REVIT ADD-IN - MULTIPLE AUTOMATIONS',
         categories: ['Programming', 'Automations'],
-        image: projectPlaceholder,
+        image: revitAddIn,
         description: `# Building CRAFT Aladdin: Automating the Invisible Work of Structural Engineering
 
 Structural engineering has a public-facing story: you calculate loads, size members, make the decisions that keep a building standing. Then there's the other work — forty gridlines renamed by hand, two hundred columns tagged one by one, twelve framing plan sheets aligned by eye. Systematic, repetitive, necessary, and consuming time that should have gone to thinking about the structure.
@@ -78,57 +217,26 @@ And something harder to name: permission. When repeatable work is automated, the
         id: 1,
         title: 'THEVERYMANY PAVILIONS - THEVERYMANY / CRAFT - MILAN / LONDON / SINGAPORE',
         categories: ['Computational Design', 'Structural Design', 'Confidential'],
-        description: `Projects include Pavilion Nomad (Milan 2023), TheVeryMany London, and TheVeryMany Singapour. 
-These projects and their specific structural engineering details are confidential.`
+        image: theverymanyGlyphs,
+        description: `Projects include Pavilion Nomad (Milan 2023), TheVeryMany London, and TheVeryMany Singapore.
+These projects and their specific structural engineering details are confidential.
+
+<iframe src="${import.meta.env.BASE_URL}theverymany_glyphs_showcase.html" style="width: 100%; height: 500px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin: 2rem 0; background: transparent;"></iframe>`
     },
     {
-        id: 9,
-        title: 'ODYSSEY - SANFORD BIGGERS STUDIO - PORTLAND, OR',
-        categories: ['Computational Design', 'Structural Engineering'],
-        image: 'https://craftengin.com/wp-content/uploads/2025/03/Odyssey-007.jpg',
-        description: `Odyssey is a pair of fully suspended sculptures by Sanford Biggers Studio, located in the new mass-timber terminal at Portland International Airport. 
-The artwork consists of custom DiBond aluminum graphic panels supported by lightweight aluminum tube frames and hung from near-invisible stainless steel aircraft cables to create a seamless illusion of floating above deplaning passengers. 
+        id: 11,
+        title: 'PIXELIZER - IN-BROWSER PIXEL ART GENERATOR',
+        categories: ['Creative Coding', 'Web Tool'],
+        image: pixelArt,
+        description: `# Pixel Art Generator
+*JavaScript, HTML5 Canvas*
 
-![Odyssey Floating](https://craftengin.com/wp-content/uploads/2025/03/Odyssey-007.jpg)
+A browser-based image pixelizer that converts photographs into retro pixel art using a two-pass rendering pipeline. The first pass downscales the source image to a low-resolution grid using bilinear averaging, condensing each pixel block into a single representative color. The second pass upscales the result with nearest-neighbor interpolation to produce hard pixel edges without smoothing artifacts.
 
-My work as a structural engineer at CRAFT focused on the FEA modeling of the suspension system, utilizing linear and nonlinear large-deformation analysis to simulate the delicate balance of a suspended mass on tension-only cables under gravity and seismic loads. 
-Positioned in a seismically active zone with proximity to full-height glazing walls, the sculptures required a highly coordinated bracing strategy. 
-We designed diagonal cables to prevent lateral sway toward the glass, while allowing controlled free-sway in all other directions, carefully verified against the airport's 3D BIM to avoid clashes with architectural finishes. 
+Color quantization is handled in two modes: posterization, which snaps each RGB channel to a set of evenly-spaced discrete levels, and palette matching, which maps every pixel to the closest color in a fixed palette using squared Euclidean distance in RGB space. The tool ships with five historically accurate palettes including the original Game Boy DMG four-shade green, Game Boy Color, Pico-8, CGA, and Endesga 32.
 
-![Odyssey Detail Structural](https://craftengin.com/wp-content/uploads/2025/03/Odyssey-008.jpg)
+Built as a single self-contained HTML file with no external dependencies.
 
-Custom connection brackets were also developed and analyzed using solid element analysis to securely attach the artwork to both the delicate aluminum frames and the massive timber ceiling trellis. 
-
-![Odyssey Context](https://craftengin.com/wp-content/uploads/2025/03/Odyssey-009.jpg)
-
-Fabrication: JunoWorks | Engineering: CRAFT Engineering Studio`
-    },
-    {
-        id: 4,
-        title: 'ISSY LES MOULINEAUX - CONFIDENTIAL - PARIS',
-        categories: ['Structural Design'],
-        image: projectPlaceholder,
-        description: `Description for Issy les Moulineaux goes here.`
-    },
-    {
-        id: 5,
-        title: 'VAUGIRARD - CONFIDENTIAL - PARIS',
-        categories: ['Structural Design'],
-        image: projectPlaceholder,
-        description: `Description for Vaugirard goes here.`
-    },
-    {
-        id: 10,
-        title: 'STARS - CONFIDENTIAL - UNKNOWN',
-        categories: ['Structural Design', 'Computational Design'],
-        image: projectPlaceholder,
-        description: `Description for Stars goes here.`
-    },
-    {
-        id: 7,
-        title: 'URSA MAJOR - CONFIDENTIAL - UNKNOWN',
-        categories: ['Structural Design'],
-        image: projectPlaceholder,
-        description: `Description for Ursa Major goes here.`
+<iframe src="${import.meta.env.BASE_URL}pixelizer.html" style="width: 100%; height: 750px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin: 2rem 0; background: var(--bg-color);"></iframe>`
     }
 ];

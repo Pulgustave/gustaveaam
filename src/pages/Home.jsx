@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
     return (
@@ -11,28 +12,47 @@ const Home = () => {
             textAlign: 'center',
             padding: '0 2rem'
         }}>
-            <h1 className="title-hero fade-in" style={{ animationDelay: '0.2s' }}>
-                Gustavo Avellaneda M.
-            </h1>
-            <h2 className="fade-in" style={{
-                fontSize: '2rem',
-                fontWeight: 300,
-                letterSpacing: '0.1em',
-                marginBottom: '3rem',
-                animationDelay: '0.5s',
-                color: 'var(--accent-color)'
-            }}>
-                COMPUTATION <span style={{ color: 'var(--text-secondary)' }}>×</span> ENGINEERING
-            </h2>
             <p className="fade-in" style={{
-                fontSize: '1.25rem',
+                fontSize: '1rem',
+                color: 'var(--green)',
+                marginBottom: '0.5rem',
+                animationDelay: '0.1s'
+            }}>
+                &gt; whoami
+            </p>
+            <p className="fade-in" style={{
+                fontSize: '1.1rem',
+                color: 'var(--text-secondary)',
+                marginBottom: '2.5rem',
+                animationDelay: '0.2s'
+            }}>
+                gustavo avellaneda m.
+            </p>
+
+            <h1 className="title-hero fade-in" style={{ animationDelay: '0.4s' }}>
+                <span className="glitch" data-text="ENGINEER.">ENGINEER.</span>
+                <br />
+                <span className="glitch" data-text="COMPUTATIONAL DESIGNER.">COMPUTATIONAL DESIGNER.</span>
+                <br />
+                <span className="glitch" data-text="CODE TINKERER." style={{ color: 'var(--green)' }}>CODE TINKERER.</span>
+            </h1>
+
+            <p className="fade-in" style={{
+                fontSize: '1rem',
                 maxWidth: '600px',
                 color: 'var(--text-secondary)',
-                lineHeight: 1.6,
-                animationDelay: '0.8s'
+                lineHeight: 1.8,
+                marginBottom: '2.5rem',
+                animationDelay: '0.7s'
             }}>
-                Exploring the space between code and design. Creating digital possibilities that emerge in the physical world.
+                &gt; searching for the thing that feels like me_
+                <br />
+                &gt; result: it doesn't exist yet<span className="cursor-blink">_</span>
             </p>
+
+            <Link to="/contact" className="btn-sticker fade-in" style={{ animationDelay: '0.9s' }}>
+                [ say hi ]
+            </Link>
         </div>
     );
 };

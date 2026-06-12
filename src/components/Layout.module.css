@@ -26,8 +26,7 @@
     width: 100%;
     height: 100%;
     z-index: 0;
-    background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
-    /* Fallback */
+    background: var(--bg-color);
     pointer-events: all;
-    /* Needs to capture mouse for P5 later */
+    /* Needs to capture mouse for P5 */
 }

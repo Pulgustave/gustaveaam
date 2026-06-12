@@ -1,84 +1,43 @@
 import React from 'react';
 
+const inputStyle = {
+    background: 'transparent',
+    border: 'none',
+    borderBottom: '1px solid rgba(57, 255, 20, 0.4)',
+    padding: '0.75rem 0',
+    color: 'var(--text-primary)',
+    fontSize: '1rem',
+    fontFamily: 'var(--font-main)',
+    outline: 'none',
+    transition: 'border-color 0.2s ease',
+};
+
+const focusGreen = (e) => { e.target.style.borderColor = 'var(--green)'; };
+const blurReset = (e) => { e.target.style.borderColor = 'rgba(57, 255, 20, 0.4)'; };
+
 const Contact = () => {
     return (
-        <div style={{ padding: '2rem var(--page-padding)', maxWidth: '800px' }}>
-            <h1 className="title-hero fade-in">Contact</h1>
-            <p className="fade-in" style={{ fontSize: '1.2rem', marginBottom: '2rem', animationDelay: '0.2s', color: 'var(--text-secondary)' }}>
-                Interested in collaboration? Let's build something interstellar.
+        <div style={{ padding: '2rem var(--page-padding) 4rem', maxWidth: '800px' }}>
+            <h1 className="title-hero fade-in">&gt; sendmail</h1>
+            <p className="fade-in" style={{ fontSize: '1rem', marginBottom: '2.5rem', animationDelay: '0.2s', color: 'var(--text-secondary)' }}>
+                &gt; interested in collaboration? let's build something fun.
             </p>
 
             <form className="fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', animationDelay: '0.4s' }}>
-                <input
-                    type="text"
-                    placeholder="Name"
-                    style={{
-                        background: 'transparent',
-                        border: 'none',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-                        padding: '1rem 0',
-                        color: 'white',
-                        fontSize: '1.1rem',
-                        outline: 'none'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = 'var(--accent-color)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)'}
-                />
-                <input
-                    type="email"
-                    placeholder="Email"
-                    style={{
-                        background: 'transparent',
-                        border: 'none',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-                        padding: '1rem 0',
-                        color: 'white',
-                        fontSize: '1.1rem',
-                        outline: 'none'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = 'var(--accent-color)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)'}
-                />
-                <textarea
-                    placeholder="Message"
-                    rows="4"
-                    style={{
-                        background: 'transparent',
-                        border: 'none',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-                        padding: '1rem 0',
-                        color: 'white',
-                        fontSize: '1.1rem',
-                        outline: 'none',
-                        resize: 'vertical'
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = 'var(--accent-color)'}
-                    onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)'}
-                />
-                <button
-                    type="button"
-                    style={{
-                        alignSelf: 'flex-start',
-                        background: 'transparent',
-                        border: '1px solid var(--accent-color)',
-                        color: 'var(--accent-color)',
-                        padding: '1rem 3rem',
-                        fontSize: '1rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        marginTop: '1rem'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.target.style.background = 'var(--accent-color)';
-                        e.target.style.color = 'black';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.target.style.background = 'transparent';
-                        e.target.style.color = 'var(--accent-color)';
-                    }}
-                >
-                    TRANSMIT
+                <label style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                    <span style={{ color: 'var(--green)', fontSize: '0.9rem' }}>&gt; name:</span>
+                    <input type="text" style={inputStyle} onFocus={focusGreen} onBlur={blurReset} />
+                </label>
+                <label style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                    <span style={{ color: 'var(--green)', fontSize: '0.9rem' }}>&gt; email:</span>
+                    <input type="email" style={inputStyle} onFocus={focusGreen} onBlur={blurReset} />
+                </label>
+                <label style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                    <span style={{ color: 'var(--green)', fontSize: '0.9rem' }}>&gt; message:</span>
+                    <textarea rows="4" style={{ ...inputStyle, resize: 'vertical' }} onFocus={focusGreen} onBlur={blurReset} />
+                </label>
+                <button type="button" className="btn-sticker" style={{ alignSelf: 'flex-start', marginTop: '0.5rem' }}>
+                    [ send_ ]
                 </button>
             </form>
         </div>

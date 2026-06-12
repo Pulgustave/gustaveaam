@@ -6,10 +6,6 @@ import projectPlaceholder from '../assets/project_placeholder.png';
 const Portfolio = () => {
     const navigate = useNavigate();
     const [filter, setFilter] = useState('All');
-    
-    // Instead of coordinate tracking, we just track which item is hovered 
-    // to fade in the bottom-left pill box.
-    const [hoveredProject, setHoveredProject] = useState(null);
 
     // Dynamically get unique categories
     const categories = useMemo(() => {
@@ -24,14 +20,14 @@ const Portfolio = () => {
     }, [filter]);
 
     return (
-        <div style={{ padding: '2rem var(--page-padding)', position: 'relative', minHeight: '100vh' }}>
-            <h1 className="title-hero fade-in">Projects</h1>
+        <div style={{ padding: '2rem var(--page-padding) 4rem', position: 'relative', minHeight: '100vh' }}>
+            <h1 className="title-hero fade-in">&gt; ls ./work</h1>
 
             {/* Filter UI */}
             <div className="fade-in" style={{
-                marginBottom: '4rem',
+                marginBottom: '3rem',
                 display: 'flex',
-                gap: '1.5rem',
+                gap: '0.5rem',
                 flexWrap: 'wrap',
                 animationDelay: '0.1s'
             }}>
@@ -40,103 +36,68 @@ const Portfolio = () => {
                         key={cat}
                         onClick={() => setFilter(cat)}
                         style={{
-                            background: filter === cat ? 'rgba(255,255,255,0.1)' : 'transparent',
-                            color: filter === cat ? 'var(--text-primary)' : 'var(--text-secondary)',
-                            border: '1px solid',
-                            borderColor: filter === cat ? 'rgba(255,255,255,0.2)' : 'transparent',
-                            padding: '0.4rem 1.2rem',
-                            borderRadius: '2rem',
-                            cursor: 'pointer',
-                            fontSize: '0.85rem',
-                            fontWeight: '500',
-                            transition: 'all 0.3s ease',
+                            background: 'transparent',
+                            border: 'none',
+                            color: filter === cat ? 'var(--green)' : 'var(--text-secondary)',
                             fontFamily: 'var(--font-main)',
-                            letterSpacing: '0.05em'
+                            fontSize: '0.9rem',
+                            cursor: 'pointer',
+                            padding: '0.4rem 0.2rem',
+                            transition: 'color 0.2s ease',
+                            textTransform: 'lowercase'
                         }}
-                        onMouseEnter={(e) => {
-                            if (filter !== cat) {
-                                e.currentTarget.style.color = 'var(--text-primary)';
-                            }
-                        }}
-                        onMouseLeave={(e) => {
-                            if (filter !== cat) {
-                                e.currentTarget.style.color = 'var(--text-secondary)';
-                            }
-                        }}
+                        onMouseEnter={(e) => { if (filter !== cat) e.currentTarget.style.color = 'var(--green)'; }}
+                        onMouseLeave={(e) => { if (filter !== cat) e.currentTarget.style.color = 'var(--text-secondary)'; }}
                     >
-                        {cat}
+                        [ {cat} ]
                     </button>
                 ))}
             </div>
 
             <div style={{
                 display: 'grid',
-                // Smaller min-width to ensure at least 3 columns on standard screens
                 gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
                 gap: '2.5rem',
             }}>
                 {filteredProjects.map((project, index) => {
-                    const isHovered = hoveredProject === project.id;
                     const hasRealImage = project.image && project.image !== projectPlaceholder;
-                    
+
                     return (
-                        <div key={project.id} className="fade-in" style={{
+                        <div key={project.id} className="card fade-in" style={{
                             animationDelay: `${0.2 + (index * 0.1)}s`,
-                            // Remove the gradient. If there's an image, use it perfectly clean. 
-                            // Otherwise, fallback to a sleek solid black as requested.
-                            background: hasRealImage ? `url(${project.image})` : '#0d0d0f',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            aspectRatio: '1.33 / 1', // standard 4:3
-                            borderRadius: '1.2rem', // sleek rounded corners
                             display: 'flex',
-                            transition: 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)',
+                            flexDirection: 'column',
                             cursor: 'pointer',
-                            position: 'relative',
                             overflow: 'hidden',
-                            border: hasRealImage ? 'none' : '1px solid rgba(255, 255, 255, 0.05)'
                         }}
                             onClick={() => navigate(`/portfolio/${project.id}`)}
-                            onMouseEnter={() => setHoveredProject(project.id)}
-                            onMouseLeave={() => setHoveredProject(null)}
                         >
-                            {/* Robert Licau style: Bottom left absolute pill box */}
                             <div style={{
-                                position: 'absolute',
-                                bottom: '1.5rem',
-                                left: '1.5rem',
-                                maxWidth: 'calc(100% - 3rem)', // Prevent from overflowing the right edge
-                                padding: '0.6rem 1rem',
-                                background: 'rgba(50, 50, 50, 0.5)', 
-                                backdropFilter: 'blur(12px)',
-                                WebkitBackdropFilter: 'blur(12px)',
-                                borderRadius: '1.5rem', // Slightly smaller radius to accommodate multiple lines gracefully
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.75rem',
-                                opacity: isHovered ? 1 : 0,
-                                transform: isHovered ? 'translateY(0)' : 'translateY(10px)',
-                                transition: 'all 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
-                                pointerEvents: 'none'
-                            }}>
-                                <span style={{
-                                    color: '#ffffff',
-                                    fontSize: '0.85rem',
-                                    fontWeight: '500',
-                                    fontFamily: 'var(--font-main)',
-                                    textAlign: 'left', // Keep text left aligned when wrapping
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 2, // Restrict to maximum 2 lines
-                                    WebkitBoxOrient: 'vertical',
-                                    overflow: 'hidden',
-                                    lineHeight: '1.3'
+                                aspectRatio: '1.33 / 1',
+                                background: hasRealImage ? `url(${project.image})` : '#000',
+                                backgroundSize: hasRealImage ? 'cover' : undefined,
+                                backgroundPosition: 'center',
+                                borderBottom: '1px solid rgba(57, 255, 20, 0.4)',
+                            }} />
+
+                            <div style={{ padding: '1.1rem 1.25rem' }}>
+                                <h3 style={{
+                                    margin: 0,
+                                    marginBottom: '0.75rem',
+                                    fontSize: '0.95rem',
+                                    lineHeight: 1.4,
+                                    color: 'var(--text-primary)',
+                                    fontWeight: 600,
                                 }}>
                                     {project.title}
-                                </span>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{color: '#ffffff', flexShrink: 0}}>
-                                    <line x1="7" y1="17" x2="17" y2="7"></line>
-                                    <polyline points="7 7 17 7 17 17"></polyline>
-                                </svg>
+                                </h3>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                                    {project.categories.map(cat => (
+                                        <span key={cat} className="tag">
+                                            {cat}
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     );

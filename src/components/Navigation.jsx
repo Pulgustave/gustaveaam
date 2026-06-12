@@ -6,12 +6,12 @@ const Navigation = () => {
     return (
         <nav className={styles.nav}>
             <div className={styles.logo}>
-                <NavLink to="/">Gustavo Avellaneda M.</NavLink>
+                <NavLink to="/">g_avellaneda</NavLink>
             </div>
             <ul className={styles.links}>
-                <li><NavLink to="/about" className={({ isActive }) => isActive ? styles.active : ''}>About</NavLink></li>
-                <li><NavLink to="/portfolio" className={({ isActive }) => isActive ? styles.active : ''}>Projects</NavLink></li>
-                <li><NavLink to="/contact" className={({ isActive }) => isActive ? styles.active : ''}>Contact</NavLink></li>
+                <li><NavLink to="/about" className={({ isActive }) => isActive ? styles.active : ''}>about</NavLink></li>
+                <li><NavLink to="/portfolio" className={({ isActive }) => isActive ? styles.active : ''}>work</NavLink></li>
+                <li><NavLink to="/contact" className={({ isActive }) => isActive ? styles.active : ''}>contact</NavLink></li>
             </ul>
         </nav>
     );
