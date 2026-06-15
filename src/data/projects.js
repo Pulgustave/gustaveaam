@@ -68,55 +68,53 @@ This project entry, and the one about the RSA \`.str\` integration above it, wer
         title: 'RSA - NATIVE FORMAT INTEGRATION',
         categories: ['Computational Design', 'Structural Engineering', 'Automations'],
         image: rsaRobotModel,
-        description: `# RSA — Native Format Integration: Writing Directly to Robot's File Format
+        description: `# RSA — Native Format Integration: Bypassing the API to Ship 7,800 Elements in Seconds
 
 *Grasshopper, Python, Autodesk Robot Structural Analysis*
 
-A curved concrete shell — around 7,800 triangular finite elements, three thickness zones, asymmetric soil loading — needed to move from Grasshopper into Robot Structural Analysis fully loaded and analysis-ready, on a tight deadline, and re-importable every time the geometry changed.
+A curved concrete shell with around 7,800 triangular finite elements, three thickness zones, and asymmetric soil loading needed to move from Grasshopper into Robot Structural Analysis fully loaded and analysis-ready, on a tight deadline, and re-importable every time the geometry changed.
 
 ![Concrete shell geometry, top and bottom views](${rsaRobotModel})
 
 ---
 
-## The Problem With "The Right Way"
+## Why the Usual Approaches Didn't Work
 
-The obvious paths all led somewhere worse:
-
-- **BHoM** pushes elements to Robot one at a time over COM. For 7,800 elements that's 20+ minutes per iteration — not viable for a model that needed to change daily.
+- **BHoM** pushes elements to Robot one at a time over COM. For 7,800 elements that's 20+ minutes per iteration, which isn't workable for a model that needed to change daily.
 - **Excel VBA** can drive Robot through \`RobotOM.dll\`, but hit unresolvable method signature errors on \`FEServer.Create\`.
-- **GHPython + win32com** got close — node creation and thickness labels worked — but Python can't construct Robot's proprietary COM array types, so finite element creation stalled entirely.
+- **GHPython + win32com** got close: node creation and thickness labels worked, but Python can't construct Robot's proprietary COM array types, so finite element creation stalled entirely.
 
-Three approaches, three dead ends, all trying to talk to Robot through its API.
+All three were trying to talk to Robot through its API.
 
 ---
 
-## The Way In Nobody Documents
+## Writing the .str File Directly
 
-Robot opens its own native \`.str\` format directly via File → Open. It's plain text. No API, no COM, no middleware — just a file format Robot happens to read.
+Robot can open its own native \`.str\` format directly via File → Open. It's plain text, with no API, COM, or middleware involved — just a file format Robot happens to read.
 
 \`Grasshopper mesh → GHPython exporter → shell_import.str → Robot\`
 
-7,800 elements, 3 load cases, correct geometry and thicknesses, imported in **seconds** instead of 20+ minutes.
+7,800 elements and 3 load cases, with correct geometry and thicknesses, imported in seconds instead of 20+ minutes.
 
 ![Discretized mesh, divided into 3 zones for load application and thickness definition](${rsaLoadPanels})
 
 ---
 
-## Loads Without Panels
+## Handling Surface Loads Without Panels
 
-Robot wants **panel objects** to apply surface loads correctly on shells — without them, a \`PZ=\` load on a raw element is read as a linear load (kip/ft) instead of a surface load (kip/ft²). One panel per triangle hangs Robot on import; one panel per zone loses the per-face variation the asymmetric soil load needed.
+Robot needs panel objects to apply surface loads correctly on shells. Without them, a \`PZ=\` load on a raw element is read as a linear load (kip/ft) instead of a surface load (kip/ft²). But one panel per triangle hangs Robot on import, and one panel per zone loses the per-face variation the asymmetric soil load needed.
 
-The fix: skip panels entirely. Convert every surface load to **equivalent nodal forces** before writing the file —
+Instead, every surface load is converted to equivalent nodal forces before writing the file:
 
 \`total_force = load × face_area\`, then \`nodal_force = total_force / 3\`
 
-— and let shared boundary nodes accumulate contributions from adjacent faces automatically. Robot's solver picks up nodal forces correctly with or without panels; the only cost is that the viewport shows point loads instead of a pressure diagram. Verified against hand calculations: self-weight + SDL (1,356 kips) and live load (~330 kips) both matched Robot's results exactly.
+Shared boundary nodes accumulate contributions from adjacent faces automatically, and Robot's solver picks up nodal forces correctly with or without panels — the only tradeoff is that the viewport shows point loads instead of a pressure diagram. This was checked against hand calculations: self-weight + SDL (1,356 kips) and live load (~330 kips) both matched Robot's results exactly.
 
 ![Mesh imported into Robot, with SDL (asymmetric soil load) and LL (constant) applied](${rsaLoadVerification})
 
 ---
 
-## The Format Itself
+## The .str Format
 
 A working \`.str\` file is structured roughly as:
 
@@ -145,29 +143,26 @@ NODes
 END
 \`\`\`
 
-A few rules cost real debugging time: the file **must be UTF-16 LE** — ASCII fails silently, with no error. \`ROBOT97\` has to be the first line and \`END\` the last. \`NUMbering DIScontiguous\` allows non-sequential IDs. Material names have to match Robot's database exactly (\`CONCR\`, \`A36\`, \`A992\`...). And every import has to start from a blank Robot project — re-importing into an existing model produces duplicate ID errors.
+A few details cost real debugging time. The file must be UTF-16 LE; ASCII fails silently with no error. \`ROBOT97\` has to be the first line and \`END\` the last. \`NUMbering DIScontiguous\` allows non-sequential IDs. Material names have to match Robot's database exactly (\`CONCR\`, \`A36\`, \`A992\`...). And every import has to start from a blank Robot project, since re-importing into an existing model produces duplicate ID errors.
 
-Adjacent zone meshes also needed coincident-node deduplication — snapping points to a rounded coordinate key (0.1mm tolerance) so zone boundaries connect structurally instead of leaving the mesh split into disconnected islands.
+Adjacent zone meshes also needed coincident-node deduplication, snapping points to a rounded coordinate key (0.1mm tolerance) so zone boundaries connect structurally instead of leaving the mesh split into disconnected islands.
 
 ---
 
-## Key Lessons
+## Takeaways
 
-- Robot's COM API is effectively closed to Python — its proprietary array types are VBA-only.
-- \`dir()\` is the real documentation. Method names rarely match what the SDK implies.
-- The "unsupported" route — writing the native file format directly — turned out faster, simpler, and more reliable than anything built on the official API.
-- The model was analysis-ready the same day the geometry was finalized. With COM, that wasn't on the table.`
+Robot's COM API is effectively closed to Python, since its proprietary array types are VBA-only, and \`dir()\` ended up being the real documentation, as method names rarely matched what the SDK implied. Writing the native file format directly turned out faster, simpler, and more reliable than anything built on the official API, and the model was analysis-ready the same day the geometry was finalized — with COM, that wasn't on the table.`
     },
     {
         id: 8,
         title: 'CRAFT - REVIT ADD-IN - MULTIPLE AUTOMATIONS',
         categories: ['Programming', 'Automations'],
         image: revitAddIn,
-        description: `# Building CRAFT Aladdin: Automating the Invisible Work of Structural Engineering
+        description: `# Building the CRAFT Revit Plugin: Automating the Invisible Work of Structural Engineering
 
 Structural engineering has a public-facing story: you calculate loads, size members, make the decisions that keep a building standing. Then there's the other work — forty gridlines renamed by hand, two hundred columns tagged one by one, twelve framing plan sheets aligned by eye. Systematic, repetitive, necessary, and consuming time that should have gone to thinking about the structure.
 
-CRAFT Aladdin started as an attempt to make that work disappear.
+The CRAFT Revit plugin started as an attempt to make that work disappear.
 
 ---
 
@@ -211,7 +206,7 @@ And something harder to name: permission. When repeatable work is automated, the
 
 ---
 
-*CRAFT Aladdin is under active development. Current commands cover project setup, grid management, arch model coordination, documentation, and model cleanup.*`
+*The CRAFT Revit plugin is under active development. Current commands cover project setup, grid management, arch model coordination, documentation, and model cleanup.*`
     },
     {
         id: 1,
