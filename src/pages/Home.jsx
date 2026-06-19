@@ -45,9 +45,9 @@ const Home = () => {
                 marginBottom: '2.5rem',
                 animationDelay: '0.7s'
             }}>
-                &gt; searching for the thing that feels like me_
+                &gt; if it's repetitive, it should be code_
                 <br />
-                &gt; result: it doesn't exist yet<span className="cursor-blink">_</span>
+                &gt; if it's code, it should be fun<span className="cursor-blink">_</span>
             </p>
 
             <Link to="/contact" className="btn-sticker fade-in" style={{ animationDelay: '0.9s' }}>
