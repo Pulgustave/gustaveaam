@@ -8,12 +8,12 @@ import rsaLoadVerification from '../assets/rsa_load_verification.png';
 import thisSiteHome from '../assets/this_site_home.png';
 import thisSiteThumb from '../assets/this_site_thumb.png';
 import thisSiteGlitch from '../assets/this_site_glitch.gif';
-import rhinoMcpShell from '../assets/rhino_mcp_shell.png';
-import rhinoMcpThickness from '../assets/rhino_mcp_thickness.png';
-import rhinoMcpHeatmapSmooth from '../assets/rhino_mcp_heatmap_smooth.png';
-import rhinoMcpHeatmapFlat from '../assets/rhino_mcp_heatmap_flat.png';
-import rhinoMcpDatumRedirect from '../assets/rhino_mcp_datum_redirect.png';
-import rhinoMcpDatumCurve from '../assets/rhino_mcp_datum_curve.png';
+import rhinoMcpShell from '../assets/rhino_mcp_shell.jpg';
+import rhinoMcpThickness from '../assets/rhino_mcp_thickness.jpg';
+import rhinoMcpHeatmapSmooth from '../assets/rhino_mcp_heatmap_smooth.jpg';
+import rhinoMcpHeatmapFlat from '../assets/rhino_mcp_heatmap_flat.jpg';
+import rhinoMcpDatumRedirect from '../assets/rhino_mcp_datum_redirect.jpg';
+import rhinoMcpDatumCurve from '../assets/rhino_mcp_datum_curve.jpg';
 
 export const projects = [
     {
