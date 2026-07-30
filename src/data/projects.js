@@ -8,6 +8,12 @@ import rsaLoadVerification from '../assets/rsa_load_verification.png';
 import thisSiteHome from '../assets/this_site_home.png';
 import thisSiteThumb from '../assets/this_site_thumb.png';
 import thisSiteGlitch from '../assets/this_site_glitch.gif';
+import rhinoMcpShell from '../assets/rhino_mcp_shell.png';
+import rhinoMcpThickness from '../assets/rhino_mcp_thickness.png';
+import rhinoMcpHeatmapSmooth from '../assets/rhino_mcp_heatmap_smooth.png';
+import rhinoMcpHeatmapFlat from '../assets/rhino_mcp_heatmap_flat.png';
+import rhinoMcpDatumRedirect from '../assets/rhino_mcp_datum_redirect.png';
+import rhinoMcpDatumCurve from '../assets/rhino_mcp_datum_curve.png';
 
 export const projects = [
     {
@@ -217,6 +223,104 @@ And something harder to name: permission. When repeatable work is automated, the
 These projects and their specific structural engineering details are confidential.
 
 <iframe src="${import.meta.env.BASE_URL}theverymany_glyphs_showcase.html" style="width: 100%; height: 500px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin: 2rem 0; background: transparent;"></iframe>`
+    },
+    {
+        id: 14,
+        title: 'RHINO MCP — SHELL THICKNESS ANALYSIS',
+        categories: ['Computational Design', 'Structural Engineering'],
+        image: rhinoMcpShell,
+        description: `# Rhino MCP — Shell Thickness Analysis
+
+*Rhino 8, Python, Claude, Model Context Protocol*
+
+A working case study of Claude operating a live Rhino 8 session through the Rhino MCP Platform — not a plugin the user clicks through, but a conversational workflow where Claude writes and runs Python directly inside Rhino, reads geometry back, makes judgment calls about what it's seeing, and iterates in real time.
+
+The task: build a full 3D wall-thickness map of a freeform architectural shell — a continuous heatmap, a per-inch contour system across the entire surface, and a derived datum curve marking a specific structural transition — driven entirely through natural-language requests.
+
+![Freeform shell geometry in Rhino, two-skin Brep](${rhinoMcpShell})
+
+---
+
+## Why MCP matters here
+
+Traditional AI-assisted CAD workflows are usually one of two things: a static script the user runs once, or a chat window bolted onto the side of the software with no real read/write access. The Rhino MCP Platform gives Claude direct read access to the live document (geometry, layers, selection state, viewport) and direct write access to mesh, measure, bake geometry, and manage document state — in the same session the user is looking at.
+
+This case study is really a demonstration of that loop: build → check → get corrected → rebuild, several times over, converging on a result neither a fixed script nor a blind one-shot generation would have reached.
+
+---
+
+## Thickness measurement
+
+With two separate, non-touching skins, thickness is a two-body problem: for each point on the external surface, how far is it to the internal surface?
+
+The approach is a hybrid ray-cast + closest-point fallback. Both Breps are meshed with explicitly tuned \`MeshingParameters\` — Rhino's defaults over-tessellate curvy freeform surfaces badly, with curvature-driven refinement producing 5–10x more vertices than needed. Explicit control over \`Tolerance\`, \`MinimumEdgeLength\`, and \`MaximumEdgeLength\` brought both meshes to a manageable, predictable density (~7,600 / ~7,300 vertices). For every vertex on the external mesh, a ray is cast along its normal in both directions into the internal mesh; whichever direction hits first wins. Near edges and creases where neither ray hits, it falls back to a closest-point query.
+
+The resulting histogram was checked before committing to anything. This caught real problems in earlier iterations — ray escapes producing false long-distance hits showed up as a clean second bump in the distribution, distinguishable from the real, smoothly tapering data.
+
+\`\`\`python
+best_t = None
+t1 = Rhino.Geometry.Intersect.Intersection.MeshRay(int_mesh, Rhino.Geometry.Ray3d(p, nrm))
+if t1 >= 0:
+    best_t = t1
+t2 = Rhino.Geometry.Intersect.Intersection.MeshRay(int_mesh, Rhino.Geometry.Ray3d(p, -nrm))
+if t2 >= 0:
+    if best_t is None or t2 < best_t:
+        best_t = t2
+if best_t is not None:
+    thickness_ft[i] = best_t
+else:
+    cp = int_mesh.ClosestPoint(p)
+    thickness_ft[i] = p.DistanceTo(cp)
+\`\`\`
+
+![Thickness histogram — clean distribution, no artifact tail](${rhinoMcpThickness})
+
+---
+
+## Visualization
+
+Two heatmap variants on a turbo/rainbow colormap (the initial blue→green→red gradient was too green-dominant across the measured range, so a wider multi-stop rainbow replaced it):
+
+**Smooth** — per-vertex Gouraud-shaded mesh, colors blending continuously across each triangle.
+
+![Smooth heatmap](${rhinoMcpHeatmapSmooth})
+
+**Flat** — every triangle rebuilt with three unique unwelded vertices, all colored from that triangle's rounded average thickness, so adjacent triangles in different bands show a hard edge instead of a blend. This makes the discrete patches that match the contour lines directly visible.
+
+![Flat heatmap](${rhinoMcpHeatmapFlat})
+
+Contours were extracted with a per-triangle marching-squares approach at 1-inch intervals. Each inch level got its own Rhino layer holding both its contour lines and labels together, so any thickness band can be shown or hidden independently — 42 toggleable layers in this run, each colored to match its position on the same turbo scale as the heatmap.
+
+---
+
+## The datum curve
+
+This is where the human-in-the-loop iteration mattered most.
+
+**First attempt:** looked for a curvature sign flip along vertical section profiles of the external surface, sampled radially from the shell's centroid. Found inconsistent results: some sections flipped near the crown, others near the base, with a couple of noisy outliers. All of this was presented back to the user rather than silently picking one and moving on.
+
+**Redirect:** check the internal surface instead, near the base — a real, pronounced transition was expected around 4" up.
+
+**Second attempt:** found a strong curvature sign flip at ~3–4" up. A follow-up screenshot from the user, marked up by hand, showed they meant a different, much higher, more visually prominent fold line entirely.
+
+![User-annotated screenshot redirecting the datum search](${rhinoMcpDatumRedirect})
+
+**The actual criterion:** find where the internal surface's normal vector has zero Z-component — pointing exactly parallel to the floor. This is a precise, physically meaningful, and numerically robust criterion compared to curvature sign-flipping.
+
+Rerun with this criterion: 62 of 66 sampled angles found a clean crossing, clustering tightly between 3.64 ft and 3.96 ft above the base (mean 3.77 ft) — zero outliers. A dramatically cleaner result, because it was measuring the thing the user actually meant.
+
+The final curve was interpolated through the 62 found points (periodic, since it wraps the full perimeter), tagged with a TextDot reading its measured height, and projected onto the external surface using a horizontal ray cast — ensuring exact height preservation, since a horizontal ray can only hit a surface at the same Z it started at.
+
+![Final datum curve projected onto the external shell surface](${rhinoMcpDatumCurve})
+
+---
+
+## What this demonstrates
+
+- **Screenshots work as a feedback channel in both directions.** Claude pulled viewport captures to self-check; the user annotated a screenshot by hand to redirect toward the actual feature they meant.
+- **Wrong-but-plausible results get caught by cross-checking, not luck.** The first two datum-curve attempts produced clean, confident-looking numbers that were measuring the wrong thing. Histograms, outlier clustering, and visual confirmation each caught a different failure mode.
+- **The loop is genuinely iterative.** Nothing here was a single prompt → script → done. Each technique was proposed, tested, validated, and revised — several results changed after user feedback.
+- **The document stays live.** Claude has write access to the same Rhino session the user is looking at, so the deliverable isn't a file handed over at the end — it's the working document, ready to keep iterating next session.`
     },
     {
         id: 11,
