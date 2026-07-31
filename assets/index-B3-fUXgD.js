@@ -2320,7 +2320,7 @@ In the end, this is another good excuse to test AI against Computational Design 
 
 ## Why MCP matters here
 
-Traditional AI-assisted CAD workflows are usually one of two things: a static script the user runs once, or a chat window bolted onto the side of the software with no real read/write access. I have lived that and I don't love it. The Rhino MCP Platform gives Claude:
+Traditional AI-assisted CAD workflows are usually one of two things: a static script I run once, or a chat window bolted onto the side of the software with no real read/write access. I have lived that and I don't love it. The Rhino MCP Platform gives Claude:
 
 - **Direct read access** to the live document: object geometry, layers, selection state, viewport — so Claude can inspect what's actually there rather than guess from a file.
 - **Direct write access**: Claude can mesh, measure, bake geometry, create layers, and manage document state, in the same session I'm looking at.
