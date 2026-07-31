@@ -2308,9 +2308,9 @@ Robot's COM API is effectively closed to Python, since its proprietary array typ
 
 *Rhino 8, Python, Claude, Model Context Protocol*
 
-This is yet another working case study of Claude operating a live Rhino 8 session through the Rhino MCP Platform — not a plugin the user clicks through. We can call it "a conversational workflow where Claude writes and runs Python directly inside Rhino, reads geometry back, makes judgment calls about what it's seeing, and iterates with the user in real time", or the afternoon I started to feel weird.
+This is yet another working case study of me driving a live Rhino 8 session through the Rhino MCP Platform — not a plugin I click through. We can call it "a conversational workflow where I direct Claude to write and run Python directly inside Rhino, read geometry back, make judgment calls about what it's seeing, and iterate in real time", or the afternoon I started to feel weird.
 
-The task was not as simple as it seemed: build a full 3D wall-thickness map of a freeform architectural shell, a continuous heatmap and per-inch (per-inch! yeah, that monstrous Imperial System…) contour system across the entire surface, plus a derived "datum" curve marking a specific structural transition, driven entirely through natural-language requests, with Claude handling the mesh generation, geometric measurement, visualization, and labeling.
+The task was not as simple as it seemed: build a full 3D wall-thickness map of a freeform architectural shell, a continuous heatmap and per-inch (per-inch! yeah, that monstrous Imperial System…) contour system across the entire surface, plus a derived "datum" curve marking a specific structural transition — driven entirely through natural-language requests, with me directing and Claude handling the mesh generation, geometric measurement, visualization, and labeling.
 
 In the end, this is another good excuse to test AI against Computational Design Workflows in AEC and have a little fun. This is the geometry we operated on.
 
@@ -2323,8 +2323,8 @@ In the end, this is another good excuse to test AI against Computational Design 
 Traditional AI-assisted CAD workflows are usually one of two things: a static script the user runs once, or a chat window bolted onto the side of the software with no real read/write access. I have lived that and I don't love it. The Rhino MCP Platform gives Claude:
 
 - **Direct read access** to the live document: object geometry, layers, selection state, viewport — so Claude can inspect what's actually there rather than guess from a file.
-- **Direct write access**: Claude can mesh, measure, bake geometry, create layers, and manage document state, in the same session the user is looking at.
-- **A visual feedback loop**: Claude can pull viewport screenshots to check its own work, and the user can screenshot/mark up results back to Claude to redirect it.
+- **Direct write access**: Claude can mesh, measure, bake geometry, create layers, and manage document state, in the same session I'm looking at.
+- **A visual feedback loop**: Claude can pull viewport screenshots to check its own work, and I can screenshot/mark up results back to redirect it.
 
 This case study is really a demonstration of that loop: \`build → check → get corrected → rebuild\`, several times over, converging on a result neither a fixed script nor a blind one-shot AI generation would have reached.
 
@@ -2387,7 +2387,7 @@ This is where the human-in-the-loop iteration mattered most.
 
 **Redirect:** check the internal surface instead, near the base — a real, pronounced transition was expected around 4" up.
 
-**Second attempt:** found a strong curvature-sign flip at ~3–4" up. A follow-up screenshot from the user, marked up by hand, showed they meant a different, much higher, more visually prominent fold line entirely.
+**Second attempt:** found a strong curvature-sign flip at ~3–4" up. A follow-up screenshot I sent, marked up by hand, showed I meant a different, much higher, more visually prominent fold line entirely.
 
 ![User-annotated screenshot redirecting the datum search](${JU})
 
@@ -2411,8 +2411,8 @@ The final curve was interpolated through the 62 found points (periodic, since it
 
 - **Screenshots as a feedback channel work in both directions.** Claude pulled viewport captures to self-check; I annotated a screenshot by hand to redirect Claude toward the actual feature I meant — a correction that would have been very hard to convey in text alone.
 - **Wrong-but-plausible results get caught by cross-checking, not by getting lucky.** The first two datum-curve attempts produced clean, confident-looking numbers that were nonetheless measuring the wrong thing. Histograms, outlier clustering, and direct visual confirmation each caught a different failure mode.
-- **The loop is genuinely iterative, not one-shot.** Nothing here was a single prompt → single script → done. Each technique was proposed, tested, validated, and only then run at full scale — several results were revised after user feedback.
-- **The document stays live.** Because Claude has write access to the same Rhino session the user is looking at, the deliverable isn't a file handed over at the end — it's the actual working document, updated in place, ready to keep iterating next session.
+- **The loop is genuinely iterative, not one-shot.** Nothing here was a single prompt → single script → done. Each technique was proposed, tested, validated, and only then run at full scale — several results were revised after I redirected it.
+- **The document stays live.** Because Claude has write access to the same Rhino session I'm looking at, the deliverable isn't a file handed over at the end — it's the actual working document, updated in place, ready to keep iterating next session.
 
 The most important thing is that this enhances our capabilities, allowing us to build incredible things if we are knowledgeable enough to know where we are going. Otherwise, we might get somewhere — not necessarily worth our time and tokens.`},{id:8,title:"CRAFT - REVIT ADD-IN - MULTIPLE AUTOMATIONS",categories:["Programming","Automations"],image:GU,description:`# Building the CRAFT Revit Plugin: Automating the Invisible Work of Structural Engineering
 
