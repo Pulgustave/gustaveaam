@@ -2308,11 +2308,11 @@ Robot's COM API is effectively closed to Python, since its proprietary array typ
 
 *Rhino 8, Python, Claude, Model Context Protocol*
 
-This is yet another working case study of me driving a live Rhino 8 session through the Rhino MCP Platform — not a plugin I click through. We can call it "a conversational workflow where I direct Claude to write and run Python directly inside Rhino, read geometry back, make judgment calls about what it's seeing, and iterate in real time", or the afternoon I started to feel weird.
+This is another working case study. In this occasion, I was driving a live Rhino 8 session through the Rhino MCP Platform (Model Context Protocol). This article could also be called "a conversational workflow where I direct Claude to write and run Python directly inside Rhino, read geometry back, make judgment calls about what it's seeing, and iterate in real time", but since that is too long too, I rather tag it in my head as "the afternoon I started to feel weird", for future reference.
 
-The task was not as simple as it seemed: build a full 3D wall-thickness map of a freeform architectural shell, a continuous heatmap and per-inch (per-inch! yeah, that monstrous Imperial System…) contour system across the entire surface, plus a derived "datum" curve marking a specific structural transition — driven entirely through natural-language requests, with me directing and Claude handling the mesh generation, geometric measurement, visualization, and labeling.
+The task was not as simple as it seemed, and I was working on it "by hand", basically using a combination of Rhino and Grasshopper. I wanted to build a full 3D wall-thickness map of a freeform architectural shell, a continuous heatmap and per-inch (per-inch! yeah, that monstrous Imperial System…) contour system across the entire surface, plus a derived "datum" curve marking a specific structural transition — which will also be physically useful for construction — driven entirely through natural-language requests, with me directing and Claude handling the mesh generation, geometric measurement, visualization, and labeling.
 
-In the end, this is another good excuse to test AI against Computational Design Workflows in AEC and have a little fun. This is the geometry we operated on.
+In the end, this was just another good excuse to test AI against Computational Design Workflows in AEC and have a little fun. This is the geometry we operated on.
 
 ![Freeform shell geometry in Rhino, two-skin Brep](${yS})
 
@@ -2320,7 +2320,7 @@ In the end, this is another good excuse to test AI against Computational Design 
 
 ## Why MCP matters here
 
-Traditional AI-assisted CAD workflows are usually one of two things: a static script I run once, or a chat window bolted onto the side of the software with no real read/write access. I have lived that and I don't love it. The Rhino MCP Platform gives Claude:
+Traditional AI-assisted CAD workflows are usually one of two things: a static script I run once, or a chat window bolted onto the side of the software with no real read/write access. I have lived that and I don't love it. But I also don't love black boxes. The Rhino MCP Platform gives Claude:
 
 - **Direct read access** to the live document: object geometry, layers, selection state, viewport — so Claude can inspect what's actually there rather than guess from a file.
 - **Direct write access**: Claude can mesh, measure, bake geometry, create layers, and manage document state, in the same session I'm looking at.
@@ -2330,16 +2330,27 @@ This case study is really a demonstration of that loop: \`build → check → ge
 
 ---
 
-## Thickness measurement
+## The task (as prompted to Claude)
 
-With two separate, non-touching skins, thickness is a two-body problem: for each point on the external surface, how far is it to the internal surface?
+Given two Brep surfaces representing the external and internal skins of a shell structure, produce:
+
+1. A per-vertex thickness measurement across the whole shell (distance between the two skins).
+2. A visual heatmap of that thickness.
+3. Contour lines at fixed thickness intervals, organized so any interval can be toggled on/off independently.
+4. A "datum" curve marking a specific geometric feature: the line around the shell's perimeter where the internal surface's normal vector becomes parallel to the floor — the real transition between the vertical "wall" portion of the shell and the curved "roof" portion.
+
+---
+
+## Measuring thickness
+
+With two separate, non-touching skins, thickness measurement is a two-body problem: for each point on the external surface, how far is it to the internal surface?
 
 **Approach:** hybrid ray-cast + closest-point fallback.
 
 1. Mesh both Breps with explicitly tuned \`MeshingParameters\` — Rhino's defaults over-tessellate curvy freeform surfaces badly (curvature-driven refinement can produce 5-10x more vertices than needed). Explicit control over \`Tolerance\`, \`MinimumEdgeLength\`, \`MaximumEdgeLength\`, and disabling \`ComputeCurvature\`/\`RefineGrid\` brought both meshes down to a manageable, predictable density (~7,600 / ~7,300 vertices here).
 2. For every vertex on the external mesh, cast a ray along its normal in both directions into the internal mesh (\`Intersection.MeshRay\`); take whichever direction hits first.
 3. If neither ray hits (rare, near edges/creases), fall back to a closest-point query on the internal mesh.
-4. Sanity-check the resulting histogram before committing to anything. This caught real problems in earlier iterations — ray escapes producing false long-distance hits showed up as a clean second bump in the distribution, distinguishable from the real, smoothly tapering data. This iteration's histogram was clean on the first pass: no artifact tail, smooth decline from a peak at 11".
+4. Sanity-check the resulting histogram before committing to anything. This caught real problems in earlier iterations of this project. Ray escapes producing false long-distance hits showed up as a clean second "bump" in the distribution, distinguishable from the real, smoothly tapering data. This iteration's histogram was clean on the first pass: no artifact tail, smooth decline from a peak at 11".
 
 \`\`\`python
 best_t = None
@@ -2365,33 +2376,33 @@ else:
 
 ## Visualization
 
-Two heatmap variants, both on a turbo/rainbow colormap:
+I requested two heatmap variants, both on a turbo/rainbow colormap:
 
 **Smooth** — standard per-vertex Gouraud-shaded mesh, colors blending continuously across each triangle.
 
 ![Smooth heatmap](${KU})
 
-**Flat** — every triangle rebuilt with three unique unwelded vertices, all colored identically from that triangle's rounded average thickness, so adjacent triangles in different bands show a hard edge instead of a blend, making the discrete patches that match the contour lines directly visible.
+**Flat** — every triangle rebuilt with three unique (unwelded) vertices, all colored identically from that triangle's rounded average thickness, so adjacent triangles in different bands show a hard edge instead of a blend, making the discrete "patches" that match the contour lines directly visible.
 
 ![Flat heatmap](${QU})
 
-Contours were extracted with a per-triangle marching-squares approach at 1-inch intervals. Each inch level got its own Rhino layer holding both its contour lines and labels together, so any thickness band can be shown or hidden independently.
+Contours were extracted with a straightforward per-triangle marching-squares approach at 1-inch intervals, then each inch level was given its own Rhino layer (holding both its contour lines and its labels together) so any thickness band can be shown or hidden independently.
 
 ---
 
 ## The datum curve (the interesting part)
 
-This is where the human-in-the-loop iteration mattered most.
+This is where my back-and-forth with Claude mattered most.
 
-**First attempt:** looked for a curvature sign flip along vertical section profiles of the external surface, sampled radially from the shell's centroid. Found inconsistent results: some sections flipped near the crown, others near the base, plus a couple of outright noisy outliers. All of this was presented back rather than silently picking one and moving on.
+**First attempt:** Claude looked for a curvature sign flip along vertical section profiles of the external surface, sampled radially from the shell's centroid. Found inconsistent results: some sections flipped near the crown, others (in symmetric, repeating angular clusters) flipped near the base, plus a couple of outright noisy outliers. Claude presented all of this back rather than silently picking one and moving on. Since I never told Claude to use the internal surface as reference, the results were just not useful, but this was an opportunity to learn.
 
-**Redirect:** check the internal surface instead, near the base — a real, pronounced transition was expected around 4" up.
+**My redirect:** check the internal surface instead, near the base — a real, pronounced transition was expected around 4" up.
 
-**Second attempt:** found a strong curvature-sign flip at ~3–4" up. A follow-up screenshot I sent, marked up by hand, showed I meant a different, much higher, more visually prominent fold line entirely.
+**Second attempt:** Claude searched the internal surface near the base. Found a strong, clean curvature-sign flip at ~3–4" up — but a follow-up screenshot I sent, marked up by hand, showed I meant a different, much higher, more visually prominent fold line entirely. It turns out Claude was looking at the base of the shell while I had been prompting it to look at mid-height!
 
-![User-annotated screenshot redirecting the datum search](${JU})
+![My annotated screenshot redirecting the datum search](${JU})
 
-**The actual criterion**, given directly by me after a few minutes of frustration using "normal" language: find where the internal surface's true normal vector has zero Z-component, i.e., points exactly parallel to the floor. This is a precise, physically meaningful, and far more numerically robust criterion than curvature sign-flipping.
+**The actual criterion**, given directly by me after a few minutes of frustration using "normal" language: find where the internal surface's true normal vector has zero Z-component, i.e., points exactly parallel to the floor. This is a precise, physically meaningful, and (it turned out) far more numerically robust criterion than curvature sign-flipping.
 
 \`\`\`python
 result = int_brep.ClosestPoint(pt, 2.0)
@@ -2399,22 +2410,26 @@ success, cp, ci, u, v, nrm = result
 # ... sample nrm.Z along the profile, find where it crosses zero
 \`\`\`
 
-Rerun with this criterion: 62 of 66 sampled angles found a clean crossing, clustering tightly between 3.64 ft and 3.96 ft above the base (mean 3.77 ft) — zero outliers. A dramatically cleaner result, because it was measuring the thing I actually meant.
+Rerun with this criterion: 62 of 66 sampled angles found a clean crossing, clustering tightly between 3.64 ft and 3.96 ft above the base (mean 3.77 ft), with zero outliers. A dramatically cleaner result than either prior attempt, because it was measuring the thing I actually meant.
 
-The final curve was interpolated through the 62 found points (periodic, since it wraps the full perimeter), tagged with a visible \`TextDot\` reading its measured height, and projected onto the external surface using a horizontal ray cast — ensuring exact height preservation, since a horizontal ray can only hit a surface at the same Z it started at.
+The final curve was:
 
-![Final datum curve projected onto the external shell surface](${ez})
+- Interpolated through the 62 found points (periodic, since it wraps the full perimeter, later split into 2-3 segments to avoid a kink in the interpolation).
+- Tagged with a visible \`TextDot\` reading its measured height ("datum @45.3in height").
+- I asked Claude to project it on the external surface at a fixed height, but it made a mess of the curve. I ended up creating the datum line on the external surface by simple project/intersect operations in Rhino.
+
+![Final datum curve on the external shell surface](${ez})
 
 ---
 
 ## What this demonstrates
 
-- **Screenshots as a feedback channel work in both directions.** Claude pulled viewport captures to self-check; I annotated a screenshot by hand to redirect Claude toward the actual feature I meant — a correction that would have been very hard to convey in text alone.
-- **Wrong-but-plausible results get caught by cross-checking, not by getting lucky.** The first two datum-curve attempts produced clean, confident-looking numbers that were nonetheless measuring the wrong thing. Histograms, outlier clustering, and direct visual confirmation each caught a different failure mode.
-- **The loop is genuinely iterative, not one-shot.** Nothing here was a single prompt → single script → done. Each technique was proposed, tested, validated, and only then run at full scale — several results were revised after I redirected it.
-- **The document stays live.** Because Claude has write access to the same Rhino session I'm looking at, the deliverable isn't a file handed over at the end — it's the actual working document, updated in place, ready to keep iterating next session.
+- **Screenshots as a feedback channel work in both directions.** Claude pulled viewport captures to self-check; I annotated a screenshot by hand to redirect Claude toward the actual feature I meant. This kind of correction would have been very hard to convey in text alone, and images escape the barriers of language.
+- **If you want to lead, you need to know in which direction.** Wrong-but-plausible results get caught by cross-checking, not by getting lucky. The first two datum-curve attempts produced clean, confident-looking numbers that were nonetheless measuring the wrong thing. Histograms, outlier clustering, and direct visual confirmation each caught a different failure mode.
+- **The loop is genuinely iterative, not one-shot.** Nothing here was a single prompt → single script → done. Each geometric technique was proposed, tested on a sample, validated against a sanity check, and only then run at full scale — and even then, several results were revised after I redirected it (heatmap palette, contour organization, projection method).
+- **It is like a black box in some ways.** Claude will explain what it is doing, but if you don't know anything about geometry, linear algebra, computational design, etc., you'll be under the illusion of thinking that you are steering the wheel — but the illusion will end at the same moment your session reaches its limits. If you don't have a stable internet connection or find yourself out of tokens and have to go back to "human" mode, you'll be totally lost. That's why we need to keep learning, because knowledge still matters, and always will.
 
-The most important thing is that this enhances our capabilities, allowing us to build incredible things if we are knowledgeable enough to know where we are going. Otherwise, we might get somewhere — not necessarily worth our time and tokens.`},{id:8,title:"CRAFT - REVIT ADD-IN - MULTIPLE AUTOMATIONS",categories:["Programming","Automations"],image:GU,description:`# Building the CRAFT Revit Plugin: Automating the Invisible Work of Structural Engineering
+The most important thing is that this enhances our capabilities, allowing us to build incredible things if we are knowledgeable enough to know where we are going. Otherwise, we might get somewhere — just not necessarily worth our time and tokens.`},{id:8,title:"CRAFT - REVIT ADD-IN - MULTIPLE AUTOMATIONS",categories:["Programming","Automations"],image:GU,description:`# Building the CRAFT Revit Plugin: Automating the Invisible Work of Structural Engineering
 
 Structural engineering has a public-facing story: you calculate loads, size members, make the decisions that keep a building standing. Then there's the other work — forty gridlines renamed by hand, two hundred columns tagged one by one, twelve framing plan sheets aligned by eye. Systematic, repetitive, necessary, and consuming time that should have gone to thinking about the structure.
 
